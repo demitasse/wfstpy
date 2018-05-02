@@ -1,34 +1,40 @@
 #!/usr/bin/env python3
-"""Simple implementation of WFST to test algorithms
+"""Simple implementation of a Weighted Finite State Transducer
 
 """
 from uuid import uuid4 
 from collections import namedtuple
 
-Wfst = namedtuple("Wfst", "s0 s") #start, states
-Arc = namedtuple("Arc", "i o w n") #ilabel, olabel, weight, nextstate
-State = namedtuple("State", "a w") #arcs, weight
 
-def add_state(wfst, w=None):
+##DEFS
+Wfst = namedtuple("Wfst", "st0 st sr") #start, states, semiring
+Arc = namedtuple("Arc", "il ol wt nst") #ilabel, olabel, weight, nextstate
+State = namedtuple("State", "ar wt") #arcs, weight
+Semiring = namedtuple("Semiring", "plus times zero one")
+
+#SEMIRINGS
+TROPICAL = Semiring(plus=lambda x,y: min(x, y),
+                    times=lambda x,y: x + y,
+                    zero=float("inf"),
+                    one=float(0.0))
+
+##CONVENIENCE FUNCS
+def add_state(wfst, weight=None):
     i = uuid4().int
-    wfst.s[i] = State(a=[], w=w)
+    if weight is None:
+        weight = wfst.sr.zero
+    wfst.st[i] = State(ar=[], wt=weight)
     return i
 
-def set_finalweight(wfst, i, w):
-    wfst.s[i] = State(a=wfst.s[i].a, w=w)
+def set_finalweight(wfst, state, weight):
+    wfst.st[state] = State(ar=wfst.st[state].ar, wt=weight)
 
-def new_with_start(wfst, i):
-    s = wfst.s[i] #check
-    return Wfst(s0=i, s=wfst.s)
+def new_wfst(semiring=TROPICAL):
+    return Wfst(st0=None, st={}, sr=semiring)
 
-    
-if __name__ == "__main__":
-    wfst = Wfst(s0=None, s={})
-    s0 = add_state(wfst)
-    s1 = add_state(wfst)
-    s2 = add_state(wfst)
-    wfst.s[s0].a.append(Arc(i="a", o="a", w=0.5, n=s1))
-    wfst = new_with_start(wfst, s0)
+def make_with_start(wfst, i):
+    s = wfst.st[i] #check
+    return Wfst(st0=i, st=wfst.st, sr=wfst.sr)
 
-    from pprint import pprint
-    pprint(wfst._asdict())
+def is_final(wfst, state):
+    return wfst.st[state].wt != wfst.sr.zero
