@@ -17,3 +17,25 @@ def extendfinal(wfst):
         wt = wfst.st[s].wt
         wfst.st[s].ar.append(Arc(il=None, ol=None, wt=wt, nst=new_final))
         wfst.st[s] = State(ar=wfst.st[s].ar, wt=wfst.sr.zero)
+
+def reversed(iwfst):
+    """Builds a new wfst...
+
+       Requires the input wfst to have a single final state
+    """
+    #Only one final state
+    final_states = [s for s in iwfst.st if is_final(iwfst, s)]
+    assert len(final_states) == 1
+    #Build new wfst
+    owfst = new_wfst(semiring=iwfst.sr)
+    ##copy states
+    for s in iwfst.st:
+        add_state(owfst, with_id=s)
+        if is_final(iwfst, s):
+            owfst = make_with_start(owfst, s)
+    set_finalweight(owfst, iwfst.st0, owfst.sr.one)
+    ##make reversed arcs
+    for s in iwfst.st:
+        for arc in iwfst.st[s].ar:
+            owfst.st[arc.nst].ar.append(Arc(il=arc.il, ol=arc.ol, wt=arc.wt, nst=s))
+    return owfst

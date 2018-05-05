@@ -4,7 +4,7 @@
 """
 
 from wfst import *
-from wfst.algo import extendfinal
+import wfst.algo as algo
 from wfst.io import serialise, to_fsm_format
 
 
@@ -32,5 +32,11 @@ if __name__ == "__main__":
     print(to_fsm_format(wfst))
     print()
     print("EXTEND FINAL:")
-    extendfinal(wfst)
+    algo.extendfinal(wfst)
     print(to_fsm_format(wfst))
+    print()
+    print("REVERSED:")
+    rwfst = algo.reversed(wfst)
+    print(to_fsm_format(rwfst))
+
+    

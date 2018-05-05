@@ -20,8 +20,11 @@ SR_TROPICAL = Semiring(plus=lambda x,y: min(x, y),
                        one=float(0.0))
 
 ##CONVENIENCE FUNCS
-def add_state(wfst, weight=None):
-    i = uuid4().int
+def add_state(wfst, weight=None, with_id=None):
+    if with_id is None:
+        i = uuid4().int
+    else:
+        i = with_id
     if weight is None:
         weight = wfst.sr.zero
     wfst.st[i] = State(ar=[], wt=weight)
@@ -33,9 +36,9 @@ def set_finalweight(wfst, state, weight):
 def new_wfst(semiring=SR_TROPICAL):
     return Wfst(st0=None, st={}, sr=semiring)
 
-def make_with_start(wfst, i):
-    s = wfst.st[i] #check
-    return Wfst(st0=i, st=wfst.st, sr=wfst.sr)
+def make_with_start(wfst, state):
+    s = wfst.st[state] #check
+    return Wfst(st0=state, st=wfst.st, sr=wfst.sr)
 
 def is_final(wfst, state):
     return wfst.st[state].wt != wfst.sr.zero
