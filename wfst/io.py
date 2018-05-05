@@ -54,10 +54,14 @@ def to_fsm_format(wfst, map_syms=False):
     return "\n".join(fsm_lines)
 
 
-def serialise(wfst):
+def serialise(wfst, fname=None):
     if wfst.sr is SR_TROPICAL:
         wfst = Wfst(st0=wfst.st0, st=wfst.st, sr="SR_TROPICAL")
-    return pickle.dumps(wfst)
+    if fname is None:
+        return pickle.dumps(wfst)
+    else:
+        with open(fname, "wb") as outfh:
+            pickle.dump(wfst, outfh)
     
 
 def deserialise(s):

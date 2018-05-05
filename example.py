@@ -24,19 +24,19 @@ if __name__ == "__main__":
     #set starting state
     wfst = make_with_start(wfst, states[0])
     #serialise
-    import pickle
-    with open("example.wfst.pickle", "wb") as outfh:
-        outfh.write(serialise(wfst))
+    serialise(wfst, fname="original.wfst.pickle")
 
     print("ORIGINAL:")
     print(to_fsm_format(wfst))
     print()
     print("EXTEND FINAL:")
     algo.extendfinal(wfst)
+    serialise(wfst, fname="extended.wfst.pickle")
     print(to_fsm_format(wfst))
     print()
     print("REVERSED:")
     rwfst = algo.reversed(wfst)
+    serialise(rwfst, fname="reversed.wfst.pickle")
     print(to_fsm_format(rwfst))
 
     
