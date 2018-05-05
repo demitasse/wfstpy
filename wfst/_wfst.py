@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """Simple implementation of a Weighted Finite State Transducer
 
 """
@@ -13,10 +14,10 @@ State = namedtuple("State", "ar wt") #arcs, weight
 Semiring = namedtuple("Semiring", "plus times zero one")
 
 #SEMIRINGS
-TROPICAL = Semiring(plus=lambda x,y: min(x, y),
-                    times=lambda x,y: x + y,
-                    zero=float("inf"),
-                    one=float(0.0))
+SR_TROPICAL = Semiring(plus=lambda x,y: min(x, y),
+                       times=lambda x,y: x + y,
+                       zero=float("inf"),
+                       one=float(0.0))
 
 ##CONVENIENCE FUNCS
 def add_state(wfst, weight=None):
@@ -29,7 +30,7 @@ def add_state(wfst, weight=None):
 def set_finalweight(wfst, state, weight):
     wfst.st[state] = State(ar=wfst.st[state].ar, wt=weight)
 
-def new_wfst(semiring=TROPICAL):
+def new_wfst(semiring=SR_TROPICAL):
     return Wfst(st0=None, st={}, sr=semiring)
 
 def make_with_start(wfst, i):
