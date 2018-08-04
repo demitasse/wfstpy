@@ -12,4 +12,5 @@ from .io import to_fsm_format, deserialise
 @click.command()
 def wfstpy_print():
     wfst = deserialise(sys.stdin.buffer.read())
-    print(to_fsm_format(wfst))
+    for line in to_fsm_format(wfst):
+        print(line, end="")

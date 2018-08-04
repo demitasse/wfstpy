@@ -13,7 +13,6 @@ class CallableDict(dict):
 
 
 def to_fsm_format(wfst, map_syms=False):
-    fsm_lines = []
     s = wfst.st0
     s_map = {}
     s_map[s] = len(s_map)
@@ -40,18 +39,17 @@ def to_fsm_format(wfst, map_syms=False):
                 sym_map[arc.il] = len(sym_map)
             if map_syms and arc.ol not in sym_map:
                 sym_map[arc.ol] = len(sym_map)
-            fsm_lines.append("\t".join(map(str, [s_map[s],
-                                                 s_map[arc.nst],
-                                                 sym_map(arc.il),
-                                                 sym_map(arc.ol),
-                                                 arc.wt])))
+            yield "\t".join(map(str, [s_map[s],
+                                      s_map[arc.nst],
+                                      sym_map(arc.il),
+                                      sym_map(arc.ol),
+                                      arc.wt])) + "\n"
     #FINAL STATES
     for s in finals:
         if wfst.st[s].wt == wfst.sr.one:
-            fsm_lines.append(str(s_map[s]))
+            yield str(s_map[s]) + "\n"
         else:
-            fsm_lines.append("\t".join(map(str, [s_map[s], wfst.st[s].wt])))
-    return "\n".join(fsm_lines)
+            yield str("\t".join(map(str, [s_map[s], wfst.st[s].wt]))) + "\n"
 
 
 def serialise(wfst, fname=None):
