@@ -27,18 +27,18 @@ if __name__ == "__main__":
     serialise(wfst, fname="original.wfst.pickle")
 
     print("ORIGINAL:")
-    for line in to_fsm_format(wfst):
+    for line in to_fsm_format(wfst, map_states=True):
         print(line, end="")
     print()
     print("EXTEND FINAL:")
     algo.extendfinal(wfst)
     serialise(wfst, fname="extended.wfst.pickle")
-    for line in to_fsm_format(wfst):
+    for line in to_fsm_format(wfst, map_states=True):
         print(line, end="")
     print()
     print("REVERSED:")
     rwfst = algo.reversed(wfst)
     serialise(rwfst, fname="reversed.wfst.pickle")
-    for line in to_fsm_format(wfst):
+    for line in to_fsm_format(wfst, map_states=True):
         print(line, end="")
 

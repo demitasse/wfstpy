@@ -12,10 +12,13 @@ class CallableDict(dict):
         return self[key]
 
 
-def to_fsm_format(wfst, map_syms=False):
+def to_fsm_format(wfst, map_syms=False, map_states=False):
     s = wfst.st0
-    s_map = {}
-    s_map[s] = len(s_map)
+    if map_states:
+        s_map = CallableDict()
+        s_map[s] = len(s_map)
+    else:
+        s_map = lambda x:x
     s_queue = [wfst.st0]
     finals = []
     if map_syms:
@@ -31,25 +34,26 @@ def to_fsm_format(wfst, map_syms=False):
         if is_final(wfst, s):
             finals.append(s)
         for arc in wfst.st[s].ar:
-            if arc.nst not in s_map:
-                s_map[arc.nst] = len(s_map)
+            if map_states:
+                if arc.nst not in s_map:
+                    s_map[arc.nst] = len(s_map)
             if arc.nst not in s_done and arc.nst not in s_queue:
                 s_queue.append(arc.nst)
             if map_syms and arc.il not in sym_map:
                 sym_map[arc.il] = len(sym_map)
             if map_syms and arc.ol not in sym_map:
                 sym_map[arc.ol] = len(sym_map)
-            yield "\t".join(map(str, [s_map[s],
-                                      s_map[arc.nst],
+            yield "\t".join(map(str, [s_map(s),
+                                      s_map(arc.nst),
                                       sym_map(arc.il),
                                       sym_map(arc.ol),
                                       arc.wt])) + "\n"
     #FINAL STATES
     for s in finals:
         if wfst.st[s].wt == wfst.W.one():
-            yield str(s_map[s]) + "\n"
+            yield str(s_map(s)) + "\n"
         else:
-            yield str("\t".join(map(str, [s_map[s], wfst.st[s].wt]))) + "\n"
+            yield str("\t".join(map(str, [s_map(s), wfst.st[s].wt]))) + "\n"
 
 
 def serialise(wfst, fname=None):
