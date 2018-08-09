@@ -12,12 +12,12 @@ def extendfinal(wfst):
     """Modifies the input...
     """
     final_states = [s for s in wfst.st if is_final(wfst, s)]
-    new_final = add_state(wfst, wfst.sr.one())
+    new_final = add_state(wfst, wfst.W.one())
     #connect finals to new final
     for s in final_states:
         wt = wfst.st[s].wt
         wfst.st[s].ar.append(Arc(il=None, ol=None, wt=wt, nst=new_final))
-        wfst.st[s] = State(ar=wfst.st[s].ar, wt=wfst.sr.zero())
+        wfst.st[s] = State(ar=wfst.st[s].ar, wt=wfst.W.zero())
 
 def reversed(iwfst):
     """Builds a new wfst...
@@ -28,13 +28,13 @@ def reversed(iwfst):
     final_states = [s for s in iwfst.st if is_final(iwfst, s)]
     assert len(final_states) == 1
     #Build new wfst
-    owfst = new_wfst(semiring=iwfst.sr)
+    owfst = new_wfst(semiring=iwfst.W)
     ##copy states
     for s in iwfst.st:
         add_state(owfst, with_id=s)
         if is_final(iwfst, s):
             owfst = make_with_start(owfst, s)
-    set_finalweight(owfst, iwfst.st0, owfst.sr.one())
+    set_finalweight(owfst, iwfst.st0, owfst.W.one())
     ##make reversed arcs
     for s in iwfst.st:
         for arc in iwfst.st[s].ar:

@@ -9,7 +9,7 @@ from collections import namedtuple
 
 
 ##DEFS
-Wfst = namedtuple("Wfst", "st0 st sr") #start, states, semiring
+Wfst = namedtuple("Wfst", "st0 st W") #start, states, Weight class (semiring)
 Arc = namedtuple("Arc", "il ol wt nst") #ilabel, olabel, weight, nextstate
 State = namedtuple("State", "ar wt") #arcs, weight
 Semiring = namedtuple("Semiring", "plus times zero one")
@@ -58,7 +58,7 @@ def add_state(wfst, weight=None, with_id=None):
     else:
         i = with_id
     if weight is None:
-        weight = wfst.sr.zero()
+        weight = wfst.W.zero()
     wfst.st[i] = State(ar=[], wt=weight)
     return i
 
@@ -66,11 +66,11 @@ def set_finalweight(wfst, state, weight):
     wfst.st[state] = State(ar=wfst.st[state].ar, wt=weight)
 
 def new_wfst(semiring=TropicalWeight):
-    return Wfst(st0=None, st={}, sr=TropicalWeight)
+    return Wfst(st0=None, st={}, W=TropicalWeight)
 
 def make_with_start(wfst, state):
     s = wfst.st[state] #check
-    return Wfst(st0=state, st=wfst.st, sr=wfst.sr)
+    return Wfst(st0=state, st=wfst.st, W=wfst.W)
 
 def is_final(wfst, state):
-    return wfst.st[state].wt != wfst.sr.zero()
+    return wfst.st[state].wt != wfst.W.zero()

@@ -46,7 +46,7 @@ def to_fsm_format(wfst, map_syms=False):
                                       arc.wt])) + "\n"
     #FINAL STATES
     for s in finals:
-        if wfst.st[s].wt == wfst.sr.one():
+        if wfst.st[s].wt == wfst.W.one():
             yield str(s_map[s]) + "\n"
         else:
             yield str("\t".join(map(str, [s_map[s], wfst.st[s].wt]))) + "\n"
