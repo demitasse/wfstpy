@@ -4,7 +4,7 @@
 """
 import pickle
 
-from . import is_final, Wfst, SR_TROPICAL
+from . import is_final, Wfst
 
 
 class CallableDict(dict):
@@ -46,15 +46,13 @@ def to_fsm_format(wfst, map_syms=False):
                                       arc.wt])) + "\n"
     #FINAL STATES
     for s in finals:
-        if wfst.st[s].wt == wfst.sr.one:
+        if wfst.st[s].wt == wfst.sr.one():
             yield str(s_map[s]) + "\n"
         else:
             yield str("\t".join(map(str, [s_map[s], wfst.st[s].wt]))) + "\n"
 
 
 def serialise(wfst, fname=None):
-    if wfst.sr is SR_TROPICAL:
-        wfst = Wfst(st0=wfst.st0, st=wfst.st, sr="SR_TROPICAL")
     if fname is None:
         return pickle.dumps(wfst)
     else:
@@ -64,6 +62,4 @@ def serialise(wfst, fname=None):
 
 def deserialise(s):
     wfst = pickle.loads(s)
-    if wfst.sr == "SR_TROPICAL":
-        wfst = Wfst(st0=wfst.st0, st=wfst.st, sr=SR_TROPICAL)
     return wfst
