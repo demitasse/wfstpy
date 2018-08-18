@@ -10,7 +10,9 @@ import click
 from .io import to_fsm_format, deserialise
 
 @click.command()
-def wfstpy_print():
+@click.option("--map_syms", is_flag=True)
+@click.option("--map_states", is_flag=True)
+def wfstpy_print(map_syms, map_states):
     wfst = deserialise(sys.stdin.buffer.read())
-    for line in to_fsm_format(wfst):
+    for line in to_fsm_format(wfst, map_syms=map_syms, map_states=map_states):
         print(line, end="")
