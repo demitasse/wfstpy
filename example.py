@@ -45,7 +45,7 @@ if __name__ == "__main__":
         #print(line, end="")
     #print()
     print("NBEST:")
-    wfst = algo.nbest(deepcopy(wfst), n=3)
+    wfst = algo.nbest(deepcopy(wfst), n=2)
     print()
     
     
