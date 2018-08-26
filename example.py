@@ -3,6 +3,8 @@
 """Simple demonstration script
 """
 
+from copy import deepcopy
+
 from wfst import *
 import wfst.algo as algo
 from wfst.io import serialise, to_fsm_format
@@ -13,7 +15,7 @@ if __name__ == "__main__":
     #add states
     states = []
     for i in range(4):
-        states.append(add_state(wfst))
+        states.append(add_state(wfst, with_id=i+1))
     set_finalweight(wfst, states[-1], TropicalWeight(3.0))
     #add arcs
     wfst.st[states[0]].ar.append(Arc(il=1, ol=1, wt=wfst.W(3.0), nst=states[1]))
@@ -26,19 +28,24 @@ if __name__ == "__main__":
     #serialise
     serialise(wfst, fname="original.wfst.pickle")
 
-    print("ORIGINAL:")
-    for line in to_fsm_format(wfst, map_states=True):
-        print(line, end="")
-    print()
-    print("EXTEND FINAL:")
-    algo.extendfinal(wfst)
+    #print("ORIGINAL:")
+    #for line in to_fsm_format(wfst):
+        #print(line, end="")
+    #print()
+    #print("EXTEND FINAL:")
+    efwfst = algo.extendfinal(deepcopy(wfst))
     serialise(wfst, fname="extended.wfst.pickle")
-    for line in to_fsm_format(wfst, map_states=True):
-        print(line, end="")
-    print()
-    print("REVERSED:")
-    rwfst = algo.reversed(wfst)
+    #for line in to_fsm_format(efwfst):
+        #print(line, end="")
+    #print()
+    #print("REVERSED:")
+    rwfst = algo.reversedfst(wfst)
     serialise(rwfst, fname="reversed.wfst.pickle")
-    for line in to_fsm_format(wfst, map_states=True):
-        print(line, end="")
-
+    #for line in to_fsm_format(rwfst):
+        #print(line, end="")
+    #print()
+    print("NBEST:")
+    wfst = algo.nbest(deepcopy(wfst), n=3)
+    print()
+    
+    
