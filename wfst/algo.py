@@ -172,8 +172,9 @@ def nbest(wfst, n):
             kk = -1 if k is None else k
             print("\tr[", kk+1, "] =", r[k])
         if pstate is None:
-            owfst.st[st0].ar.append(Arc(il=None, ol=None, wt=owfst.W.one(), nst=state))
             print("ADDING ARC TO STARTING STATE")
+            owfst.st[st0].ar.append(Arc(il=None, ol=None, wt=owfst.W.one(), nst=state))
+            print("ADDING ARC:", st0, None, None, owfst.W.one(), state)
         if pstate is None and r[pstate] == n:
             break
         if r[pstate] > n:
@@ -187,6 +188,7 @@ def nbest(wfst, n):
             print("ADDING STATE:", nextstate)
             pairs[nextstate] = (arc.nst, w)
             owfst.st[nextstate].ar.append(arc)
+            print("ADDING ARC", nextstate, rarc.il, rarc.ol, rarc.wt, state, sep=", ")
             heappush(queue, ComparableState(nextstate))
         if is_final(rwfst, pstate):
             final_weight = rwfst.st[pstate].wt
@@ -195,12 +197,14 @@ def nbest(wfst, n):
             print("ADDING STATE:", nextstate)
             pairs[nextstate] = (None, w)
             owfst.st[nextstate].ar.append(Arc(il=None, ol=None, wt=final_weight, nst=state))            
+            print("ADDING ARC", nextstate, None, None, final_weight, state, sep=", ")
             heappush(queue, ComparableState(nextstate))
         for k in sorted(pairs):
             print("\t", k, pairs[k])
         print()
+    return owfst
     #before connect
-    for s in owfst.st:
-        print("State:", s)
-        for a in owfst.st[s].ar:
-            print("\tArc:", a)
+    # for s in owfst.st:
+    #     print("State:", s)
+    #     for a in owfst.st[s].ar:
+    #         print("\tArc:", a)
