@@ -182,11 +182,11 @@ def nbest(wfst, n):
         if pstate is None:
             continue
         for rarc in rwfst.st[pstate].ar:
-            arc = Arc(il=rarc.il, ol=rarc.ol, wt=rarc.wt, nst=rarc.nst)
+            arc = Arc(il=rarc.il, ol=rarc.ol, wt=rarc.wt, nst=state)
             w = pweight * arc.wt
             nextstate = add_state(owfst, with_id=_debug); _debug += 1
             print("ADDING STATE:", nextstate)
-            pairs[nextstate] = (arc.nst, w)
+            pairs[nextstate] = (rarc.nst, w)
             owfst.st[nextstate].ar.append(arc)
             print("ADDING ARC", nextstate, rarc.il, rarc.ol, rarc.wt, state, sep=", ")
             heappush(queue, ComparableState(nextstate))

@@ -50,3 +50,11 @@ if __name__ == "__main__":
     for line in to_fsm_format(nbwfst):
         print(line, end="")
     print()
+    print("MANUAL")
+    print("start state:", nbwfst.st0)
+    for s in nbwfst.st:
+        if nbwfst.st[s].ar:
+            for a in nbwfst.st[s].ar:
+                print(s, a.nst, a.il, a.ol, str(a.wt))
+        else:
+            print(s)
