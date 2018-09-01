@@ -85,7 +85,7 @@ def nbest(wfst, n):
     rwfst = reversedfst(wfst)
     print("EXTENDED REVERSED:")
     import wfst.io as io
-    print("".join(io.to_fsm_format(rwfst)))
+    print("\n".join(io.to_fsm_format_walk(rwfst)))
     print("Find shortest distance for new superinitial in reversed")
     d = rwfst.W.zero()
     for arc in rwfst.st[rwfst.st0].ar:

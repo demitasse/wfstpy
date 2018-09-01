@@ -12,7 +12,6 @@ from collections import namedtuple
 Wfst = namedtuple("Wfst", "st0 st W") #start, states, Weight class (semiring)
 Arc = namedtuple("Arc", "il ol wt nst") #ilabel, olabel, weight, nextstate
 State = namedtuple("State", "ar wt") #arcs, weight
-Semiring = namedtuple("Semiring", "plus times zero one")
 
 #SEMIRINGS
 class TropicalWeight(object):
@@ -27,6 +26,17 @@ class TropicalWeight(object):
     def one(cls):
         return cls(float(0.0))
 
+    @classmethod
+    def one(cls):
+        return cls(float(0.0))
+
+    @classmethod
+    def from_str(cls, value: str):
+        if value == "":
+            return cls(None)
+        else:
+            return cls(float(value))
+    
     def __add__(self, other: "TropicalWeight"):
         return TropicalWeight(min(self.value, other.value))
 
@@ -65,6 +75,9 @@ def add_state(wfst, weight=None, with_id=None):
 def set_finalweight(wfst, state, weight):
     wfst.st[state] = State(ar=wfst.st[state].ar, wt=weight)
 
+def is_final(wfst, state):
+    return wfst.st[state].wt != wfst.W.zero()
+
 def new_wfst(semiring=TropicalWeight):
     return Wfst(st0=None, st={}, W=TropicalWeight)
 
@@ -72,5 +85,15 @@ def make_with_start(wfst, state):
     s = wfst.st[state] #check
     return Wfst(st0=state, st=wfst.st, W=wfst.W)
 
-def is_final(wfst, state):
-    return wfst.st[state].wt != wfst.W.zero()
+def new_wfst_from_spec(semiring, start_state, states, final_states, arcs):
+    # This does not check weight instances against semiring specified
+    wfst = new_wfst(semiring)
+    for state in states:
+        if state in final_states:
+            add_state(wfst, weight=final_states[state], with_id=state)
+        else:
+            add_state(wfst, with_id=state)
+    wfst = make_with_start(wfst, start_state)
+    for arc in arcs:
+        wfst.st[arc[0]].ar.append(Arc(il=arc[2], ol=arc[3], wt=arc[4], nst=arc[1]))
+    return wfst

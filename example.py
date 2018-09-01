@@ -7,7 +7,7 @@ from copy import deepcopy
 
 from wfst import *
 import wfst.algo as algo
-from wfst.io import serialise, to_fsm_format
+from wfst.io import serialise, to_fsm_format_walk
 
 
 if __name__ == "__main__":
@@ -29,26 +29,26 @@ if __name__ == "__main__":
     serialise(wfst, fname="original.wfst.pickle")
 
     #print("ORIGINAL:")
-    #for line in to_fsm_format(wfst):
-        #print(line, end="")
+    #for line in to_fsm_format_walk(wfst):
+        #print(line)
     #print()
     #print("EXTEND FINAL:")
     efwfst = algo.extendfinal(deepcopy(wfst))
     serialise(wfst, fname="extended.wfst.pickle")
-    #for line in to_fsm_format(efwfst):
-        #print(line, end="")
+    #for line in to_fsm_format_walk(efwfst):
+        #print(line)
     #print()
     #print("REVERSED:")
     rwfst = algo.reversedfst(wfst)
     serialise(rwfst, fname="reversed.wfst.pickle")
-    #for line in to_fsm_format(rwfst):
-        #print(line, end="")
+    #for line in to_fsm_format_walk(rwfst):
+        #print(line)
     #print()
     print("NBEST:")
-    nbwfst = algo.nbest(deepcopy(wfst), n=2)
+    nbwfst = algo.nbest(deepcopy(wfst), n=1)
     print()
-    for line in to_fsm_format(nbwfst):
-        print(line, end="")
+    for line in to_fsm_format_walk(nbwfst):
+        print(line)
     print()
     print("MANUAL")
     print("start state:", nbwfst.st0)
