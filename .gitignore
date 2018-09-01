@@ -1,7 +1,8 @@
 *~
 *.pyc
 __pycache__
-venv
+venv*
 *.pickle
 *.egg-info
 *.pdf
+testdata
