@@ -5,4 +5,3 @@ venv*
 *.pickle
 *.egg-info
 *.pdf
-testdata

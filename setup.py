@@ -17,6 +17,7 @@ setup_args = {
     "author_email": "dvn.demitasse@gmail.com",
     "url": "https://bitbucket.org/dvndemitasse/wfstpy",
     "packages": find_packages(),
+    "test_suite": "tests",
     "python_requires": python_requires,
     "install_requires": install_requires,
     "entry_points": {

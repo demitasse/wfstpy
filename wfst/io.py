@@ -61,7 +61,8 @@ def from_fsm_format(lines: Iterable[str],
                     semiring=TropicalWeight,
                     isyms: Optional[dict]=None,
                     osyms: Optional[dict]=None,
-                    int_states=True):
+                    int_states=True,
+                    epsilon="0"):
     start_state = None
     states = set()
     final_states = {}
@@ -85,8 +86,8 @@ def from_fsm_format(lines: Iterable[str],
             src, tgt = _states
             states.add(src)
             states.add(tgt)
-            ilabel = isyms[fields[2]] if isyms else fields[2]
-            olabel = osyms[fields[3]] if osyms else fields[3]
+            ilabel = isyms[fields[2]] if isyms else None if fields[2] == epsilon else fields[2]
+            olabel = osyms[fields[3]] if osyms else None if fields[3] == epsilon else fields[3]
             arcs.append((src, tgt, ilabel, olabel, weight))
         else:
             tgt = _states[0]

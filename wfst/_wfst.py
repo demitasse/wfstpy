@@ -75,6 +75,9 @@ def add_state(wfst, weight=None, with_id=None):
 def set_finalweight(wfst, state, weight):
     wfst.st[state] = State(ar=wfst.st[state].ar, wt=weight)
 
+def get_finalweight(wfst, state):
+    return wfst.st[state].wt
+
 def is_final(wfst, state):
     return wfst.st[state].wt != wfst.W.zero()
 
