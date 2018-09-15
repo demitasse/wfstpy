@@ -9,11 +9,12 @@ python_requires = ">=3"
 setup_args = {
     "name": "wfst",
     "version": version,
+    "licence": "Apache/MIT",
     "description": "Weighted Finite State Transducers",
     "long_description": "Weighted Finite State Transducers and algorithms.",
     "author": "Daniel van Niekerk",
     "author_email": "dvn.demitasse@gmail.com",
-    "url": "https://bitbucket.org/dvndemitasse/wfstpy",
+    "url": "https://github.com/demitasse/wfstpy",
     "packages": find_packages(),
     "test_suite": "tests",
     "python_requires": python_requires,

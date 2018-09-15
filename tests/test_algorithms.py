@@ -28,7 +28,7 @@ class TestAlgorithms(unittest.TestCase):
                 a = walk_all(nbest_wfst)
                 b = walk_all(expected_nbest_wfst)
                 self.assertEqual(a, b)
- 
-            
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -39,7 +39,7 @@ def _nbest(rwfst, phi, n):
     """
     ## SETUP ALGORITHM
     _debug = 0
-    print("Create owfst and pairs mapping")  #REM
+    #REMprint("Create owfst and pairs mapping")
     owfst = Wfst(semiring=rwfst.W)
     st0 = owfst.add_state(with_id=_debug); _debug += 1
     owfst.set_start(st0)
@@ -54,9 +54,9 @@ def _nbest(rwfst, phi, n):
     # `phi[None]` is not needed.
     pairs[owfst.get_start()] = (None, owfst.W.zero())
     pairs[final_state] = (rwfst.get_start(), owfst.W.one())
-    for k, v in pairs.items(): #REM
-        print(k, v)            #REM
-    print()                    #REM
+    #REMfor k, v in pairs.items():
+    #REM    print(k, v)
+    #REMprint()
     ### DEFINE STATE COMPARISON
     def p_weight(state):
         if state is None:
@@ -65,7 +65,7 @@ def _nbest(rwfst, phi, n):
             return phi[state]
         else:
             return rwfst.W.zero()
-    
+
     class ComparableState(object):
         def __init__(self, state):
             self.state = state
@@ -75,27 +75,27 @@ def _nbest(rwfst, phi, n):
             py = pairs[other.state]
             wx = p_weight(px[0]) * px[1]
             wy = p_weight(py[0]) * py[1]
-            print("\t\t\t\tpx =", px) #REM
-            print("\t\t\t\tpy =", py) #REM
-            print("\t\t\t\twx =", wx) #REM
-            print("\t\t\t\twy =", wy) #REM
+            #REMprint("\t\t\t\tpx =", px)
+            #REMprint("\t\t\t\tpy =", py)
+            #REMprint("\t\t\t\twx =", wx)
+            #REMprint("\t\t\t\twy =", wy)
             if (py[0] is None) and (px[0] is not None):
                 rval = (wx < wy) or (wy == wx)
-                print("\t\t\t\t\t RETURN wx <= wy:", rval) #REM
+                #REMprint("\t\t\t\t\t RETURN wx <= wy:", rval)
                 return rval
             elif (px[0] is None) and (py[0] is not None):
                 rval = wx < wy
-                print("\t\t\t\t\t RETURN wx < wy:", rval)  #REM          
+                #REMprint("\t\t\t\t\t RETURN wx < wy:", rval)
                 return rval
             else:
                 rval = wx < wy
-                print("\t\t\t\t\t RETURN wx < wy:", rval)  #REM           
+                #REMprint("\t\t\t\t\t RETURN wx < wy:", rval)
                 return rval
 
         def __str__(self):
             return str(self.state)
     ### END DEFINE STATE COMPARISON
-    
+
     # r[s + 1], s state in fst, is the number of states in owfst which
     # corresponding pair contains s, i.e., it is number of paths
     # computed so far to s. Valid for s == None (the superfinal
@@ -105,19 +105,19 @@ def _nbest(rwfst, phi, n):
     while queue:
         state = heappop(queue).state
         pstate, pweight = pairs[state]
-        print("New iter,", "state:", state, "pair:", pstate, pweight) #REM
+        #REMprint("New iter,", "state:", state, "pair:", pstate, pweight)
         d = (rwfst.W.one() if pstate is None
              else phi[pstate] if pstate in phi
              else rwfst.W.zero())
-        print("\td =", d) #REM
+        #REMprint("\td =", d)
         r[pstate] += 1
         for k in sorted(r, key=lambda x:x if type(x) is int else -1):
             kk = -1 if k is None else k
-            print("\tr[", kk+1, "] =", r[k])                             #REM
+            #REMprint("\tr[", kk+1, "] =", r[k])
         if pstate is None:
-            print("ADDING ARC TO STARTING STATE")                        #REM
+            #REMprint("ADDING ARC TO STARTING STATE")
             owfst.add_arc(state=st0, next_state=state, ilabel=None, olabel=None, weight=owfst.W.one())
-            print("ADDING ARC:", st0, None, None, owfst.W.one(), state)  #REM
+            #REMprint("ADDING ARC:", st0, None, None, owfst.W.one(), state)
         if pstate is None and r[pstate] == n:
             break
         if r[pstate] > n:
@@ -127,32 +127,26 @@ def _nbest(rwfst, phi, n):
         for rarc in rwfst.arcs(pstate):
             w = pweight * rarc.weight
             nextstate = owfst.add_state(with_id=_debug); _debug += 1
-            print("ADDING STATE:", nextstate)                                          #REM
+            #REMprint("ADDING STATE:", nextstate)
             pairs[nextstate] = (rarc.next_state, w)
             owfst.add_arc(state=nextstate, next_state=state,
                           ilabel=rarc.ilabel, olabel=rarc.olabel,
                           weight=rarc.weight)
-            print("ADDING ARC", nextstate, rarc.ilabel, rarc.olabel, rarc.weight, state, sep=", ") #REM
+            #REMprint("ADDING ARC", nextstate, rarc.ilabel, rarc.olabel, rarc.weight, state, sep=", ")
             heappush(queue, ComparableState(nextstate))
         if rwfst.is_final(pstate):
             final_weight = rwfst.get_finalweight(pstate)
             w = pweight * final_weight
             nextstate = owfst.add_state(with_id=_debug); _debug += 1
-            print("ADDING STATE:", nextstate)                                          #REM
+            #REMprint("ADDING STATE:", nextstate)
             pairs[nextstate] = (None, w)
             owfst.add_arc(state=nextstate, next_state=state, ilabel=None, olabel=None, weight=final_weight)
-            print("ADDING ARC", nextstate, None, None, final_weight, state, sep=", ")  #REM
+            #REMprint("ADDING ARC", nextstate, None, None, final_weight, state, sep=", ")
             heappush(queue, ComparableState(nextstate))
-        for k in sorted(pairs):         #REM
-            print("\t", k, pairs[k])    #REM
-        print()                         #REM
+        #REMfor k in sorted(pairs):
+        #REM    print("\t", k, pairs[k])
+        #REMprint()
     return owfst
-    #before connect                     #REM
-    # for s in owfst.st:                #REM
-    #     print("State:", s)            #REM
-    #     for a in owfst.st[s].ar:      #REM
-    #         print("\tArc:", a)        #REM
-    
 
 
 def nbest(wfst, n):
@@ -161,21 +155,21 @@ def nbest(wfst, n):
        Return a WFST representing the n-shortest paths.
     """
     shortest_distances = dijkstra(wfst) #will become φ[q] for rwfst
-    print("SHORTEST_DISTANCES")             #REM
-    for k, v in shortest_distances.items(): #REM
-        print(k, v)                         #REM
+    #REMprint("SHORTEST_DISTANCES")
+    #REMfor k, v in shortest_distances.items():
+    #REM    print(k, v)
     wfst = extendfinal(wfst)
     rwfst = reversedfst(wfst)
-    print("EXTENDED REVERSED:")                                      #REM
-    import wfst.io as io                                             #REM
-    print("\n".join(io.to_fsm_format_walk(rwfst)))                   #REM
-    print("Find shortest distance for new superinitial in reversed") #REM
+    #REMprint("EXTENDED REVERSED:")
+    #REMimport wfst.io as io
+    #REMprint("\n".join(io.to_fsm_format_walk(rwfst)))
+    #REMprint("Find shortest distance for new superinitial in reversed")
     d = rwfst.W.zero()
     for arc in rwfst.arcs(rwfst.get_start()):
         if arc.next_state in shortest_distances:
             d = d + (arc.weight * shortest_distances[arc.next_state])  # minimum of path combined with arc weight
     shortest_distances[rwfst.get_start()] = d
-    for k, v in shortest_distances.items():  #REM
-        print(k, v)                          #REM
-    print()                                  #REM
+    #REMfor k, v in shortest_distances.items():
+    #REM    print(k, v)
+    #REMprint()
     return _nbest(rwfst, shortest_distances, n)

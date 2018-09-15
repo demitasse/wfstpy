@@ -4,7 +4,7 @@
 
 """
 from typing import Optional
-from uuid import uuid4 
+from uuid import uuid4
 from collections import namedtuple
 
 
@@ -31,7 +31,7 @@ class TropicalWeight(object):
             return cls(None)
         else:
             return cls(float(value))
-    
+
     def __add__(self, other: "TropicalWeight"):
         return TropicalWeight(min(self._value, other._value))
 
@@ -47,7 +47,7 @@ class TropicalWeight(object):
 
     def __eq__(self, other: "TropicalWeight"):
         return self._value == other._value
-    
+
     def __str__(self):
         return str(self._value)
 
@@ -69,7 +69,7 @@ class Wfst(object):
 
     def __str__(self):
         pass
-        
+
     @classmethod
     def from_spec(cls, semiring, start, states, final_states, arcs):
         wfst = cls(semiring)
@@ -93,7 +93,7 @@ class Wfst(object):
 
     def arcs(self, state):
         return self._states[state].arcs.__iter__()
-    
+
     def add_state(self, weight=None, with_id=None):
         if with_id is None:
             i = uuid4().int
