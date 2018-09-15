@@ -6,8 +6,6 @@ version = "0.1.0"
 
 python_requires = ">=3"
 
-install_requires = ["click"]
-
 setup_args = {
     "name": "wfst",
     "version": version,
@@ -19,10 +17,9 @@ setup_args = {
     "packages": find_packages(),
     "test_suite": "tests",
     "python_requires": python_requires,
-    "install_requires": install_requires,
     "entry_points": {
         "console_scripts": [
-            "wfstpy_print=wfst.cli:wfstpy_print"
+            "wfst_print=wfst.cli:wfst_print"
         ]
     }
 }

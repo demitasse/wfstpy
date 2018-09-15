@@ -3,24 +3,18 @@
 """Collection of input and output functions
 """
 from typing import Iterable, Optional
-import pickle
 
-from . import is_final, Wfst, TropicalWeight, new_wfst_from_spec
-
-
-class CallableDict(dict):
-    def __call__(self, key):
-        return self[key]
+from . import Wfst, TropicalWeight
 
 
 def to_fsm_format_walk(wfst, map_syms=False, map_states=False):
-    s = wfst.st0
+    s = wfst.get_start()
     if map_states:
         s_map = CallableDict()
         s_map[s] = len(s_map)
     else:
         s_map = lambda x:x
-    s_queue = [wfst.st0]
+    s_queue = [s]
     finals = []
     if map_syms:
         sym_map = CallableDict()
@@ -32,29 +26,29 @@ def to_fsm_format_walk(wfst, map_syms=False, map_states=False):
     while s_queue:
         s = s_queue.pop(0)
         s_done.add(s)
-        if is_final(wfst, s):
+        if wfst.is_final(s):
             finals.append(s)
-        for arc in wfst.st[s].ar:
+        for arc in wfst.arcs(s):
             if map_states:
-                if arc.nst not in s_map:
-                    s_map[arc.nst] = len(s_map)
-            if arc.nst not in s_done and arc.nst not in s_queue:
-                s_queue.append(arc.nst)
-            if map_syms and arc.il not in sym_map:
-                sym_map[arc.il] = len(sym_map)
-            if map_syms and arc.ol not in sym_map:
-                sym_map[arc.ol] = len(sym_map)
+                if arc.next_state not in s_map:
+                    s_map[arc.next_state] = len(s_map)
+            if arc.next_state not in s_done and arc.next_state not in s_queue:
+                s_queue.append(arc.next_state)
+            if map_syms and arc.ilabel not in sym_map:
+                sym_map[arc.ilabel] = len(sym_map)
+            if map_syms and arc.olabel not in sym_map:
+                sym_map[arc.olabel] = len(sym_map)
             yield "\t".join(map(str, [s_map(s),
-                                      s_map(arc.nst),
-                                      sym_map(arc.il),
-                                      sym_map(arc.ol),
-                                      arc.wt]))
+                                      s_map(arc.next_state),
+                                      sym_map(arc.ilabel),
+                                      sym_map(arc.olabel),
+                                      arc.weight]))
     #FINAL STATES
     for s in finals:
-        if wfst.st[s].wt == wfst.W.one():
+        if wfst.get_finalweight(s) == wfst.W.one():
             yield str(s_map(s))
         else:
-            yield str("\t".join(map(str, [s_map(s), wfst.st[s].wt])))
+            yield str("\t".join(map(str, [s_map(s), wfst.get_finalweight(s)])))
 
 
 def from_fsm_format(lines: Iterable[str],
@@ -95,17 +89,4 @@ def from_fsm_format(lines: Iterable[str],
         if start_state is None:
             start_state = _states[0]
 
-    return new_wfst_from_spec(semiring, start_state, states, final_states, arcs)
-
-
-def serialise(wfst, fname=None):
-    if fname is None:
-        return pickle.dumps(wfst)
-    else:
-        with open(fname, "wb") as outfh:
-            pickle.dump(wfst, outfh)
-
-
-def deserialise(s):
-    wfst = pickle.loads(s)
-    return wfst
+    return Wfst.from_spec(semiring, start_state, states, final_states, arcs)

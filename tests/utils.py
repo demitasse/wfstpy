@@ -1,6 +1,5 @@
 from copy import deepcopy
 
-from wfst import get_finalweight, is_final
 
 def walk_all(wfst, remove_epsilon=True):
     """Walk all paths (depth-first) and return input label sequences and
@@ -8,7 +7,7 @@ def walk_all(wfst, remove_epsilon=True):
        not return.
 
     """
-    s = wfst.st0
+    s = wfst.get_start()
     paths = []
     curr = [[], wfst.W.one()]
     _dfs_next(wfst, s, curr, paths)
@@ -20,11 +19,11 @@ def walk_all(wfst, remove_epsilon=True):
     return paths
 
 def _dfs_next(wfst, state, current, paths):
-    for arc in wfst.st[state].ar:
-        current[0].append((arc.il, arc.ol))
-        current[1] *= arc.wt
-        if is_final(wfst, arc.nst):
-            current[1] *= get_finalweight(wfst, arc.nst)
+    for arc in wfst.arcs(state):
+        current[0].append((arc.ilabel, arc.olabel))
+        current[1] *= arc.weight
+        if wfst.is_final(arc.next_state):
+            current[1] *= wfst.get_finalweight(arc.next_state)
             paths.append(current)
         else:
-            _dfs_next(wfst, arc.nst, deepcopy(current), paths)
+            _dfs_next(wfst, arc.next_state, deepcopy(current), paths)

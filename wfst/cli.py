@@ -4,15 +4,16 @@
 """
 import sys
 import pickle
+import argparse
 
-import click
+from .io import to_fsm_format_walk
 
-from .io import to_fsm_format_walk, deserialise
+def wfst_print():
+    parser = argparse.ArgumentParser(description="Print out a compiled WFST (AT&T FSM format)")
+    parser.add_argument("--map_syms", action="store_true", help="map symbols to integers (ε=0)")
+    parser.add_argument("--map_states", action="store_true", help="map state IDs to integers")
+    args = parser.parse_args()
 
-@click.command()
-@click.option("--map_syms", is_flag=True)
-@click.option("--map_states", is_flag=True)
-def wfstpy_print(map_syms, map_states):
-    wfst = deserialise(sys.stdin.buffer.read())
-    for line in to_fsm_format_walk(wfst, map_syms=map_syms, map_states=map_states):
-        print(line, end="")
+    wfst = pickle.loads(sys.stdin.buffer.read())
+    for line in to_fsm_format_walk(wfst, map_syms=args.map_syms, map_states=args.map_states):
+        print(line)
